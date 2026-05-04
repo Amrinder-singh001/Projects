@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Worker Dashboard - VoiceHire</title>
+    <meta name="description" content="Manage your worker profile and find job opportunities on VoiceHire.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#000000",
+                        "secondary": "#00668a",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid #e0e3e5;
+        }
+        .job-card { transition: all 0.2s ease; }
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.1);
+        }
+        audio, video { width: 100%; border-radius: 10px; }
+        video { max-height: 260px; object-fit: cover; background: #000; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+
+    <!-- ═══ DESKTOP SIDEBAR ═══ -->
+    <aside class="vh-sidebar">
+        <div class="vh-sidebar-logo">
+            <span class="material-symbols-outlined logo-icon">settings_voice</span>
+            <span class="logo-text">VoiceHire</span>
+        </div>
+        <nav class="vh-sidebar-nav">
+            <button class="vh-nav-item active" onclick="window.location.href='/dashboard/worker'">
+                <span class="material-symbols-outlined">work</span>
+                <span>{{ t('My Jobs') }}</span>
+            </button>
+            <button class="vh-nav-item" onclick="document.getElementById('profile-section').scrollIntoView({behavior:'smooth'})">
+                <span class="material-symbols-outlined">account_circle</span>
+                <span>{{ t('My Profile') }}</span>
+            </button>
+            <button class="vh-nav-item" onclick="document.getElementById('portfolio-section').scrollIntoView({behavior:'smooth'})">
+                <span class="material-symbols-outlined">perm_media</span>
+                <span>{{ t('Portfolio') }}</span>
+            </button>
+        </nav>
+        <div class="vh-sidebar-footer">
+            <div class="vh-user-chip">
+                <div class="avatar"><span class="material-symbols-outlined text-sm">handyman</span></div>
+                <span class="user-name">{{ worker.name }}</span>
+            </div>
+            <button class="vh-nav-item" onclick="window.location.href='/logout'">
+                <span class="material-symbols-outlined">logout</span>
+                <span>{{ t('Sign Out') }}</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN WRAPPER ═══ -->
+    <div class="vh-main">
+
+        <!-- Sticky Header -->
+        <header class="vh-header flex items-center justify-between px-4 sm:px-6">
+            <div class="flex items-center gap-2 vh-header-logo">
+                <span class="material-symbols-outlined text-secondary">settings_voice</span>
+                <span class="font-black text-lg tracking-tight">VoiceHire</span>
+            </div>
+            <h1 class="hidden lg:block font-bold text-lg">{{ t('Worker Dashboard') }}</h1>
+            <button class="p-2 rounded-full hover:bg-slate-100 transition-colors lg:hidden" onclick="window.location.href='/logout'">
+                <span class="material-symbols-outlined text-on-surface-variant">logout</span>
+            </button>
+        </header>
+
+        <!-- ═══ PAGE CONTENT ═══ -->
+        <main class="vh-page-content">
+
+            <!-- Welcome -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary">{{ t('Welcome,') }} {{ worker.name }}!</h2>
+                    <p class="text-on-surface-variant text-base sm:text-lg mt-1">
+                        {{ t('Active as') }} <span class="font-bold text-secondary">{{ worker.work }}</span> {{ t('in') }} {{ worker.location }}
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <button id="availability-toggle" onclick="app.toggleAvailability({{ 'true' if worker.is_available else 'false' }})" 
+                        class="flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all {{ 'bg-green-100 text-green-700 border border-green-200' if worker.is_available else 'bg-slate-100 text-slate-500 border border-slate-200' }}">
+                        <span class="material-symbols-outlined text-[20px]">{{ 'check_circle' if worker.is_available else 'do_not_disturb_on' }}</span>
+                        <span>{{ t('Available') if worker.is_available else t('Busy') }}</span>
+                    </button>
+                    <span class="vh-badge-active">{{ t('Active Now') }}</span>
+                </div>
+            </div>
+
+            <!-- ═══ TWO-PANE LAYOUT ═══ -->
+            <div class="vh-two-pane">
+
+                <!-- LEFT PANE — Profile Card -->
+                <div class="vh-pane-left" id="profile-section">
+
+                    <!-- Profile Snapshot -->
+                    <div class="glass-panel rounded-2xl p-5 sm:p-6 border-2 border-secondary/10 mb-5">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
+                                <span class="material-symbols-outlined text-4xl">person</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl flex items-center gap-2">
+                                    {{ worker.name }}
+                                    {% if worker.is_verified %}
+                                    <span class="material-symbols-outlined text-green-600 text-xl" title="{{ t('Verified') }}">verified</span>
+                                    {% endif %}
+                                </h3>
+                                <p class="text-on-surface-variant text-sm flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">work</span>
+                                    {{ worker.work }}
+                                </p>
+                                <p class="text-on-surface-variant text-sm flex items-center gap-1 mt-0.5">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    {{ worker.location }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Stats chips -->
+                        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+                            <div class="bg-blue-50 rounded-xl p-3 text-center">
+                                <p class="text-xs text-blue-600 font-semibold uppercase tracking-wide">{{ t('Work Type') }}</p>
+                                <p class="font-bold text-sm text-blue-800 mt-0.5 truncate">{{ worker.work }}</p>
+                            </div>
+                            <div class="bg-green-50 rounded-xl p-3 text-center">
+                                <p class="text-xs text-green-600 font-semibold uppercase tracking-wide">{{ t('Location') }}</p>
+                                <p class="font-bold text-sm text-green-800 mt-0.5 truncate">{{ worker.location }}</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="document.getElementById('edit-profile-modal').style.display='block'" class="mt-4 w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">edit</span> {{ t('Edit Profile') }}
+                        </button>
+                    </div>
+
+                    <!-- Portfolio Media -->
+                    {% if worker.voice_note or worker.video %}
+                    <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-secondary/10" id="portfolio-section">
+                        <h3 class="font-bold text-lg flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-secondary">perm_media</span>
+                            {{ t('My Portfolio') }}
+                        </h3>
+
+                        {% if worker.voice_note %}
+                        <div class="mb-4">
+                            <p class="text-xs font-bold text-secondary uppercase tracking-wider flex items-center gap-1 mb-2">
+                                <span class="material-symbols-outlined text-sm">mic</span>{{ t('Voice Bio') }}
+                            </p>
+                            <audio controls src="{{ url_for('static', filename=worker.voice_note) }}"></audio>
+                        </div>
+                        {% endif %}
+
+                        {% if worker.video %}
+                        <div>
+                            <p class="text-xs font-bold text-secondary uppercase tracking-wider flex items-center gap-1 mb-2">
+                                <span class="material-symbols-outlined text-sm">videocam</span>{{ t('Video Pitch') }}
+                            </p>
+                            <video controls preload="metadata" src="{{ url_for('static', filename=worker.video) }}"></video>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Edit Profile Modal -->
+                <div id="edit-profile-modal" style="display:none;" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">{{ t('Edit Profile') }}</h3>
+                                <button onclick="document.getElementById('edit-profile-modal').style.display='none'" class="text-slate-400 hover:text-slate-600">
+                                    <span class="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+                            <form id="worker-edit-form" enctype="multipart/form-data" class="flex flex-col gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Name') }}</label>
+                                    <input type="text" name="name" value="{{ worker.name }}" required class="w-full border-slate-300 rounded-lg focus:ring-secondary focus:border-secondary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Work Type') }}</label>
+                                    <input type="text" name="work" value="{{ worker.work }}" required class="w-full border-slate-300 rounded-lg focus:ring-secondary focus:border-secondary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Location') }}</label>
+                                    <div class="relative">
+                                        <input type="text" name="location" id="edit-w-loc" value="{{ worker.location }}" required class="w-full border-slate-300 rounded-lg focus:ring-secondary focus:border-secondary pr-10">
+                                        <button type="button" onclick="app.detectLocation('edit-w-loc')" class="absolute right-3 top-2.5 text-secondary">
+                                            <span class="material-symbols-outlined text-[20px]">my_location</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Phone Number') }}</label>
+                                    <input type="tel" name="phone" value="{{ worker.phone }}" required pattern="[6-9][0-9]{9}" class="w-full border-slate-300 rounded-lg focus:ring-secondary focus:border-secondary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('New Password (optional)') }}</label>
+                                    <input type="password" name="password" minlength="6" placeholder="{{ t('Leave blank to keep current') }}" class="w-full border-slate-300 rounded-lg focus:ring-secondary focus:border-secondary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Update Voice Note (optional)') }}</label>
+                                    <input type="file" name="voice_note" accept="audio/*" class="w-full text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('Update Video (optional)') }}</label>
+                                    <input type="file" name="video" accept="video/*" class="w-full text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">{{ t('ID Proof (Aadhaar/Voter ID)') }}</label>
+                                    <input type="file" name="id_proof" accept="image/*" class="w-full text-sm">
+                                    {% if worker.id_proof_path %}
+                                    <p class="text-[10px] text-green-600 mt-1 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span> {{ t('ID Proof Uploaded') }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <input type="hidden" name="latitude" id="w-lat" value="{{ worker.latitude or '' }}">
+                                <input type="hidden" name="longitude" id="w-lng" value="{{ worker.longitude or '' }}">
+                                <button type="submit" id="btn-update-worker" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90 mt-2">
+                                    {{ t('Save Changes') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANE — Jobs Feed -->
+                <div class="vh-pane-right">
+                    <div class="vh-section-header">
+                        <h3 class="text-2xl font-bold">{{ t('Recommended Jobs') }}</h3>
+                        <button onclick="app.fetchJobsForWorker('{{ worker.work }}')"
+                            class="p-2 text-secondary hover:bg-secondary/5 rounded-full transition-all flex items-center gap-1 text-sm font-semibold">
+                            <span class="material-symbols-outlined text-lg">refresh</span>
+                            <span class="hidden sm:inline">{{ t('Refresh') }}</span>
+                        </button>
+                    </div>
+
+                    <div id="jobs-list" class="vh-jobs-grid">
+                        <div class="col-span-full text-slate-400 italic py-6 text-center">
+                            <span class="material-symbols-outlined text-4xl block mb-2 text-slate-300">work_outline</span>
+                            {{ t('Searching for jobs matching') }} <strong>{{ worker.work }}</strong>...
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- end vh-two-pane -->
+        </main>
+    </div><!-- end vh-main -->
+
+    <!-- ═══ MOBILE / TABLET BOTTOM NAV ═══ -->
+    <nav class="vh-bottom-nav">
+        <button class="vh-bottom-nav-item active">
+            <span class="material-symbols-outlined">work</span>
+            <span>{{ t('Jobs') }}</span>
+        </button>
+        <button class="vh-bottom-nav-item" onclick="document.getElementById('profile-section').scrollIntoView({behavior:'smooth'})">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span>{{ t('Profile') }}</span>
+        </button>
+        {% if worker.voice_note or worker.video %}
+        <button class="vh-bottom-nav-item" onclick="document.getElementById('portfolio-section').scrollIntoView({behavior:'smooth'})">
+            <span class="material-symbols-outlined">perm_media</span>
+            <span>{{ t('Portfolio') }}</span>
+        </button>
+        {% endif %}
+        <button class="vh-bottom-nav-item" onclick="window.location.href='/logout'">
+            <span class="material-symbols-outlined">logout</span>
+            <span>{{ t('Sign Out') }}</span>
+        </button>
+    </nav>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            app.fetchJobsForWorker('{{ worker.work }}');
+        });
+    </script>
+</body>
+</html>

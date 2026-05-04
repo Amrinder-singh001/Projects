@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VoiceHire – Choose Your Language</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode:"class",
+            theme:{
+                extend:{
+                    colors:{
+                        "primary":"#000000","secondary":"#00668a","background":"#f7f9fb",
+                        "surface":"#ffffff","on-surface":"#191c1e",
+                        "on-surface-variant":"#45464d","outline-variant":"#c6c6cd",
+                        "outline":"#76777d"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid rgba(255,255,255,0.6);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+        }
+        .brand-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+        }
+        .lang-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 1rem;
+            border-radius: 1rem;
+            border: 1.5px solid var(--outline-variant);
+            background: var(--surface);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            gap: 0.5rem;
+            text-align: center;
+        }
+        .lang-btn:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 8px 24px rgba(0,102,138,0.12);
+            transform: translateY(-2px);
+        }
+        .lang-btn.selected {
+            border-color: var(--secondary);
+            background: rgba(0,102,138,0.05);
+            box-shadow: 0 0 0 2px var(--secondary);
+        }
+        .lang-native {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .lang-english {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .lang-flag {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .cta-btn {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .cta-btn.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .cta-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+
+    <div class="vh-split-screen">
+
+        <!-- ═══ LEFT — Brand Panel (desktop only) ═══ -->
+        <div class="vh-brand-panel">
+            <div class="brand-circle" style="width:400px;height:400px;top:-100px;left:-100px;"></div>
+            <div class="brand-circle" style="width:300px;height:300px;bottom:-80px;right:-80px;"></div>
+            <div class="brand-circle" style="width:200px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+            <div style="position:relative">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:10px">
+                        <span class="material-symbols-outlined" style="font-size:2rem;color:white;font-variation-settings:'FILL' 1">settings_voice</span>
+                    </div>
+                    <span class="brand-title" style="font-size:1.75rem;margin-bottom:0">VoiceHire</span>
+                </div>
+
+                <h2 class="brand-title">Choose your<br/>Language.<br/>Get started.</h2>
+                <p class="brand-subtitle">VoiceHire supports multiple regional languages to help you navigate and find work effortlessly.</p>
+                <p class="brand-subtitle mt-2 text-sm opacity-80 font-bold">अपनी भाषा चुनें • ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ • আপনার ভাষা বেছে নিন</p>
+            </div>
+        </div>
+
+        <!-- ═══ RIGHT — Form Panel ═══ -->
+        <div class="vh-form-panel w-full" style="align-items: flex-start; padding-top: 3rem;">
+            <div class="w-full max-w-2xl mx-auto">
+
+                <!-- Mobile logo (hidden on desktop) -->
+                <div class="flex flex-col items-center mb-8 lg:hidden">
+                    <div class="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-3 shadow">
+                        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL' 1">settings_voice</span>
+                    </div>
+                    <h1 class="text-3xl font-black tracking-tight text-primary">VoiceHire</h1>
+                    <p class="text-center text-on-surface-variant mt-2 font-medium">Select your preferred language</p>
+                </div>
+
+                <!-- Form header -->
+                <div class="mb-6 hidden lg:block">
+                    <h2 class="text-3xl font-bold text-primary">Language Preference</h2>
+                    <p class="text-on-surface-variant mt-1 text-lg">
+                        Select your preferred language to continue.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                    
+                    <!-- Language Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8" id="lang-grid">
+                        
+                        <button class="lang-btn" data-lang="en" onclick="selectLang(this)">
+                            <span class="lang-flag">🇬🇧</span>
+                            <span class="lang-native">English</span>
+                            <span class="lang-english">English</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="hi" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">हिंदी</span>
+                            <span class="lang-english">Hindi</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="bn" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">বাংলা</span>
+                            <span class="lang-english">Bengali</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="te" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">తెలుగు</span>
+                            <span class="lang-english">Telugu</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="mr" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">मराठी</span>
+                            <span class="lang-english">Marathi</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="ta" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">தமிழ்</span>
+                            <span class="lang-english">Tamil</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="ur" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">اردو</span>
+                            <span class="lang-english">Urdu</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="gu" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">ગુજરાતી</span>
+                            <span class="lang-english">Gujarati</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="kn" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">ಕನ್ನಡ</span>
+                            <span class="lang-english">Kannada</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="ml" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">മലയാളം</span>
+                            <span class="lang-english">Malayalam</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="pa" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">ਪੰਜਾਬੀ</span>
+                            <span class="lang-english">Punjabi</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="or" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">ଓଡ଼ିଆ</span>
+                            <span class="lang-english">Odia</span>
+                        </button>
+            
+                        <button class="lang-btn" data-lang="as" onclick="selectLang(this)">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span class="lang-native">অসমীয়া</span>
+                            <span class="lang-english">Assamese</span>
+                        </button>
+
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="flex flex-col items-center gap-2 mt-4 pt-6 border-t border-slate-200">
+                        <button id="cta-btn" onclick="proceed()" class="w-full h-14 bg-primary text-white rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg opacity-50 pointer-events-none">
+                            <span>Continue</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                        <p class="text-on-surface-variant text-sm font-medium mt-2 text-center" id="cta-hint">Select a language above to continue</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedLang = null;
+
+        function selectLang(btn) {
+            // Remove selection from all
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+            // Mark selected
+            btn.classList.add('selected');
+            selectedLang = btn.dataset.lang;
+
+            // Show CTA
+            const cta = document.getElementById('cta-btn');
+            const hint = document.getElementById('cta-hint');
+            cta.classList.remove('opacity-50', 'pointer-events-none');
+            hint.innerHTML = `Continuing in <span class="font-bold text-secondary">${btn.querySelector('.lang-native').textContent}</span>`;
+        }
+
+        function proceed() {
+            if (!selectedLang) return;
+
+            // Store in localStorage as backup
+            localStorage.setItem('vh_lang', selectedLang);
+
+            // Redirect to backend route to set session language
+            window.location.href = '/set_lang/' + selectedLang;
+        }
+
+        // On load: check if language already stored — skip this screen
+        window.addEventListener('DOMContentLoaded', () => {
+            const stored = localStorage.getItem('vh_lang');
+            if (stored) {
+                // Pre-select stored language
+                const btn = document.querySelector(`[data-lang="${stored}"]`);
+                if (btn) selectLang(btn);
+            }
+        });
+    </script>
+</body>
+</html>

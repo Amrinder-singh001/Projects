@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Worker Registration - VoiceHire</title>
+    <meta name="description" content="Register as a local worker on VoiceHire and start getting job requests.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode:"class",
+            theme:{
+                extend:{
+                    colors:{
+                        "primary":"#000000","secondary":"#00668a","background":"#f7f9fb",
+                        "surface":"#ffffff","on-surface":"#191c1e",
+                        "on-surface-variant":"#45464d","outline-variant":"#c6c6cd","outline":"#76777d"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid #e0e3e5;
+        }
+        .custom-input {
+            border: none;
+            border-bottom: 2px solid #76777d;
+            background: transparent;
+            transition: border-color 0.2s;
+            width: 100%; height: 3rem;
+            font-size: 1rem;
+            outline: none; padding: 0 0 0.25rem;
+        }
+        .custom-input:focus { border-bottom-color: #000; }
+        .listening-indicator { display: flex; align-items: center; gap: 4px; margin-top: 0.75rem; }
+        .listening-indicator .bar { width: 4px; height: 16px; background: #00668a; border-radius: 4px; animation: surge 0.8s infinite ease-in-out; }
+        .listening-indicator .bar:nth-child(2) { animation-delay: 0.1s; }
+        .listening-indicator .bar:nth-child(3) { animation-delay: 0.2s; }
+        @keyframes surge { 0%,100%{height:8px} 50%{height:24px} }
+        .ai-speech-bubble {
+            background: linear-gradient(135deg,#dae2fd,#c4e7ff);
+            padding: 1rem 1.25rem;
+            border-radius: 1rem 1rem 1rem 0;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0,102,138,0.1);
+            font-size: 0.9375rem;
+            color: #191c1e;
+        }
+        .transcript-box { font-style: italic; color: #565e74; font-size: 0.875rem; margin-top: 0.375rem; }
+
+        /* Two-pane on desktop */
+        @media (min-width: 1024px) {
+            .worker-signup-layout {
+                display: grid;
+                grid-template-columns: 340px 1fr;
+                gap: 2rem;
+                align-items: start;
+            }
+            .ai-panel-sticky { position: sticky; top: 5.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen">
+
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 h-16 bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200">
+        <a href="{{ url_for('login_page', role='worker') }}" class="text-on-surface-variant hover:text-secondary transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="hidden sm:inline text-sm font-medium">{{ t('Back to Login') }}</span>
+        </a>
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary">settings_voice</span>
+            <span class="text-lg font-black tracking-tight">VoiceHire</span>
+        </div>
+        <div class="w-24 hidden sm:block"></div><!-- spacer -->
+    </header>
+
+    <!-- Main -->
+    <main class="pt-20 pb-10 px-4 sm:px-6 max-w-5xl mx-auto">
+
+        <!-- Page title -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-primary">{{ t('Worker Registration') }}</h1>
+            <p class="text-on-surface-variant mt-1 text-sm sm:text-base">{{ t('Join VoiceHire as a local service professional.') }}</p>
+        </div>
+
+        <!-- Two-pane layout (single col on mobile/tablet, grid on desktop) -->
+        <div class="worker-signup-layout">
+
+            <!-- ═══ LEFT / TOP — AI Voice Setup ═══ -->
+            <div class="ai-panel-sticky">
+                <div class="glass-panel rounded-2xl p-5 sm:p-6 border-2 border-secondary/20" id="ai-builder-card">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings:'FILL' 1">smart_toy</span>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-base text-primary">{{ t('AI Voice Setup') }}</h2>
+                            <p class="text-xs text-on-surface-variant">{{ t('Fill form with your voice') }}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-on-surface-variant mb-4">
+                        {{ t("Speak your details — name, work type, location, and phone number — and we'll fill in the form for you.") }}
+                    </p>
+                    <button id="btn-start-ai"
+                        class="w-full h-12 bg-secondary text-white rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all font-bold text-sm"
+                        onclick="app.startStepByStepAI()">
+                        <span class="material-symbols-outlined">mic</span>
+                        {{ t('Start Voice Setup') }}
+                    </button>
+
+                    <div id="ai-conversation-area" style="display:none; margin-top:1.25rem;">
+                        <p id="ai-question" class="ai-speech-bubble">Hi! I will guide you.</p>
+                        <div class="listening-indicator" id="ai-listening-anim">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                        <p id="ai-transcript" class="transcript-box"></p>
+                    </div>
+                </div>
+
+                <!-- Divider (mobile/tablet only) -->
+                <div class="flex items-center gap-3 my-5 lg:hidden">
+                    <div class="flex-1 h-px bg-outline-variant"></div>
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{{ t('Or fill manually') }}</span>
+                    <div class="flex-1 h-px bg-outline-variant"></div>
+                </div>
+
+                <!-- Desktop divider label -->
+                <div class="hidden lg:flex items-center gap-3 mt-5">
+                    <div class="flex-1 h-px bg-outline-variant"></div>
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{{ t('Or manually →') }}</span>
+                </div>
+            </div>
+
+            <!-- ═══ RIGHT / BOTTOM — Manual Form ═══ -->
+            <div class="glass-panel rounded-2xl p-5 sm:p-8">
+                <form id="worker-signup-form" class="flex flex-col gap-6" enctype="multipart/form-data">
+
+                    <!-- 2-col field grid on sm+ -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-7">
+                        <div class="relative pt-5">
+                            <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-name">{{ t('Full Name') }}</label>
+                            <input class="custom-input pr-10" id="w-name" name="name" placeholder="{{ t('e.g. Rahul Kumar') }}" required type="text"/>
+                            <button type="button" aria-label="Voice input" class="absolute right-0 bottom-2 text-slate-400 hover:text-secondary transition-colors" onclick="app.listenForInput('w-name')">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                        <div class="relative pt-5">
+                            <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-work">{{ t('Work Type') }}</label>
+                            <input class="custom-input pr-10" id="w-work" name="work" placeholder="{{ t('e.g. Plumber, Electrician') }}" required type="text"/>
+                            <button type="button" aria-label="Voice input" class="absolute right-0 bottom-2 text-slate-400 hover:text-secondary transition-colors" onclick="app.listenForInput('w-work')">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                        <div class="relative pt-5">
+                            <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-location">{{ t('City / Area') }}</label>
+                            <input class="custom-input pr-20" id="w-location" name="location" placeholder="{{ t('e.g. Mumbai') }}" required type="text"/>
+                            <div class="absolute right-0 bottom-2 flex items-center gap-2">
+                                <button type="button" onclick="app.detectLocation('w-location')" class="text-secondary hover:text-secondary/80 transition-colors" title="{{ t('Detect Location') }}">
+                                    <span class="material-symbols-outlined">my_location</span>
+                                </button>
+                                <button type="button" aria-label="Voice input" class="text-slate-400 hover:text-secondary transition-colors" onclick="app.listenForInput('w-location')">
+                                    <span class="material-symbols-outlined">mic</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative pt-5">
+                            <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-phone">{{ t('Phone Number') }}</label>
+                            <input class="custom-input pr-10" id="w-phone" name="phone" placeholder="{{ t('10-digit number') }}" required type="tel"/>
+                            <button type="button" aria-label="Voice input" class="absolute right-0 bottom-2 text-slate-400 hover:text-secondary transition-colors" onclick="app.listenForInput('w-phone')">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                        <div class="relative pt-5 sm:col-span-2">
+                            <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-password">{{ t('Password') }}</label>
+                            <input class="custom-input pr-10" id="w-password" name="password" placeholder="{{ t('Create a password') }}" required type="password"/>
+                            <button type="button" aria-label="Voice input" class="absolute right-0 bottom-2 text-slate-400 hover:text-secondary transition-colors" onclick="app.listenForInput('w-password')">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio upload -->
+                    <div class="bg-slate-50 rounded-xl p-5 border border-outline-variant">
+                        <h3 class="font-bold text-sm flex items-center gap-2 text-primary mb-4">
+                            <span class="material-symbols-outlined text-secondary text-lg">cloud_upload</span>
+                            {{ t('Upload Portfolio') }} <span class="text-on-surface-variant font-normal">({{ t('Optional') }})</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-voice">
+                                    <span class="material-symbols-outlined text-xs align-middle">mic</span> {{ t('Voice Note') }}
+                                </label>
+                                <input class="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20 transition-all"
+                                    id="w-voice" name="voice_note" type="file" accept="audio/*"/>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-video">
+                                    <span class="material-symbols-outlined text-xs align-middle">videocam</span> {{ t('Video Pitch') }}
+                                </label>
+                                <input class="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20 transition-all"
+                                    id="w-video" name="video" type="file" accept="video/*"/>
+                            </div>
+                            <div class="flex flex-col gap-1.5 sm:col-span-2">
+                                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="w-id">
+                                    <span class="material-symbols-outlined text-xs align-middle">badge</span> {{ t('ID Proof (Aadhaar/Voter ID)') }}
+                                </label>
+                                <input class="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20 transition-all"
+                                    id="w-id" name="id_proof" type="file" accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="latitude" id="w-lat">
+                    <input type="hidden" name="longitude" id="w-lng">
+
+                    <button type="submit" id="btn-submit-worker"
+                        class="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg text-base">
+                        <span>{{ t('Register Profile') }}</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">check_circle</span>
+                    </button>
+
+                    <p class="text-center text-xs text-on-surface-variant">
+                        {{ t('Already registered?') }} <a href="{{ url_for('login_page', role='worker') }}" class="font-bold text-secondary hover:text-primary transition-colors">{{ t('Log in here') }}</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <!-- AI Prompts for DOM Translation -->
+    <div id="ai-prompts" style="display:none;">
+        <span id="ai-p0">{{ t('What is your full name?') }}</span>
+        <span id="ai-p1">{{ t('What type of work do you do?') }}</span>
+        <span id="ai-p2">{{ t('In which city or area do you live?') }}</span>
+        <span id="ai-p3">{{ t('Please say your 10 digit phone number.') }}</span>
+        <span id="ai-p4">{{ t('Now, please say a password you would like to use.') }}</span>
+        <span id="ai-p5">{{ t('Great! Your details are saved. You can upload a voice note or video below, then click Register Profile.') }}</span>
+        <span id="ai-retry">{{ t("Sorry, I didn't catch that. Please repeat.") }}</span>
+    </div>
+</body>
+</html>

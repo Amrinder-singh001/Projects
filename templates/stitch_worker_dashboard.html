@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Worker Dashboard - VoiceHire</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/responsive.css"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#000000",
+                        "secondary": "#00668a",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid #e0e3e5;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+
+    <!-- ═══ DESKTOP SIDEBAR ═══ -->
+    <aside class="vh-sidebar">
+        <div class="vh-sidebar-logo">
+            <span class="material-symbols-outlined logo-icon">settings_voice</span>
+            <span class="logo-text">VoiceHire</span>
+        </div>
+        <nav class="vh-sidebar-nav">
+            <button class="vh-nav-item active">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+                <span>Available Tasks</span>
+            </button>
+            <button class="vh-nav-item">
+                <span class="material-symbols-outlined">chat_bubble</span>
+                <span>Messages</span>
+            </button>
+            <button class="vh-nav-item">
+                <span class="material-symbols-outlined">account_circle</span>
+                <span>My Profile</span>
+            </button>
+        </nav>
+        <div class="vh-sidebar-footer">
+            <div class="vh-user-chip">
+                <div class="avatar"><span class="material-symbols-outlined text-sm">person</span></div>
+                <span class="user-name">Worker Profile</span>
+            </div>
+            <button class="vh-nav-item">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN WRAPPER ═══ -->
+    <div class="vh-main">
+
+        <!-- Sticky Header -->
+        <header class="vh-header flex items-center justify-between px-4 sm:px-6">
+            <div class="flex items-center gap-2 vh-header-logo">
+                <span class="material-symbols-outlined text-secondary">settings_voice</span>
+                <span class="font-black text-lg tracking-tight">VoiceHire</span>
+            </div>
+            <h1 class="hidden lg:block font-bold text-lg text-on-surface">Available Tasks</h1>
+            <div class="flex items-center gap-3">
+                <button class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-on-surface-variant">translate</span>
+                </button>
+                <button class="p-2 rounded-full hover:bg-slate-100 transition-colors lg:hidden">
+                    <span class="material-symbols-outlined text-on-surface-variant">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ PAGE CONTENT ═══ -->
+        <main class="vh-page-content">
+
+            <!-- Welcome/CTA Section -->
+            <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-primary">Worker Dashboard</h2>
+                    <p class="text-on-surface-variant text-lg mt-1">Active in your area. Ready to assist.</p>
+                </div>
+                <button class="h-14 min-w-[200px] bg-primary text-white rounded-full flex items-center justify-center gap-3 px-8 font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+                    Find Work Now
+                </button>
+            </section>
+
+            <!-- Tasks Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-on-surface">Available Tasks Nearby</h3>
+                <button class="flex items-center gap-2 text-secondary font-bold hover:underline">
+                    <span class="material-symbols-outlined">filter_list</span>
+                    Filter
+                </button>
+            </div>
+
+            <!-- Job Grid -->
+            <div class="vh-jobs-grid">
+                
+                <!-- Job Card 1 -->
+                <article class="glass-card rounded-2xl p-6 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <img alt="Profile" class="w-14 h-14 rounded-full object-cover border-2 border-secondary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBbg3IxnsdXrLo8uEmFFAaB0qQDlnz8QXfrNH48seGO0pTIHNkgTOj40Bz0942lKyiMraVNl79IKMj6F5HhKpfFI9rSze0EMksa1-GIyqnKNtzlrdYSEN2oElxBwLypZEBPkXn4U3Uplqbaro5OsHYYvJW67QKVH-2f8Nyoass8n_ap2Bky64MgkWZ3GJ-6AemsL7lCvzug-R2uwnK4aA54X_X5OOEA9m_Gph8gcfeVeMuCj8sjipY6q8eZ39IAJj7e2EGo9QyCnfp"/>
+                            <div>
+                                <h4 class="font-bold text-xl text-on-surface">Assemble Bookshelf</h4>
+                                <p class="text-secondary font-bold flex items-center gap-1 mt-1 text-sm">
+                                    <span class="material-symbols-outlined text-lg">location_on</span>
+                                    0.5 miles away
+                                </p>
+                            </div>
+                        </div>
+                        <span class="bg-slate-100 text-on-surface-variant font-bold px-3 py-1 rounded-full text-xs">Today</span>
+                    </div>
+
+                    <!-- Voice Preview -->
+                    <div class="bg-slate-50 rounded-xl p-3 flex items-center gap-4 border border-outline-variant/30">
+                        <button class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                        </button>
+                        <div class="flex-grow flex items-center gap-1 h-6">
+                            <div class="w-1 h-3 bg-secondary rounded-full"></div>
+                            <div class="w-1 h-6 bg-secondary rounded-full"></div>
+                            <div class="w-1 h-4 bg-secondary rounded-full"></div>
+                            <div class="w-1 h-5 bg-secondary rounded-full"></div>
+                            <div class="w-1 h-2 bg-outline-variant rounded-full"></div>
+                            <div class="w-1 h-4 bg-outline-variant rounded-full"></div>
+                        </div>
+                        <span class="text-xs font-bold text-on-surface-variant">0:12</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-bold text-xs">Indoor</span>
+                        <span class="px-3 py-1.5 rounded-full border border-secondary/30 bg-secondary/10 text-secondary font-bold text-xs">Tools Required</span>
+                    </div>
+
+                    <button class="w-full h-12 mt-2 border-2 border-primary text-primary hover:bg-slate-50 rounded-full flex items-center justify-center font-bold transition-colors">
+                        View Details
+                    </button>
+                </article>
+
+                <!-- Job Card 2 -->
+                <article class="glass-card rounded-2xl p-6 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xl border border-red-200">
+                                M
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl text-on-surface">Garden Cleanup</h4>
+                                <p class="text-secondary font-bold flex items-center gap-1 mt-1 text-sm">
+                                    <span class="material-symbols-outlined text-lg">location_on</span>
+                                    1.2 miles away
+                                </p>
+                            </div>
+                        </div>
+                        <span class="bg-red-50 text-red-600 font-bold px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            Urgent
+                        </span>
+                    </div>
+
+                    <!-- Voice Preview -->
+                    <div class="bg-slate-50 rounded-xl p-3 flex items-center gap-4 border border-outline-variant/30">
+                        <button class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shrink-0 shadow-sm active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                        </button>
+                        <div class="flex-grow flex items-center gap-1 h-6">
+                            <div class="w-1 h-2 bg-outline-variant rounded-full"></div>
+                            <div class="w-1 h-4 bg-outline-variant rounded-full"></div>
+                            <div class="w-1 h-3 bg-outline-variant rounded-full"></div>
+                        </div>
+                        <span class="text-xs font-bold text-on-surface-variant">0:24</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-bold text-xs">Outdoor</span>
+                        <span class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-bold text-xs">Heavy Lifting</span>
+                    </div>
+
+                    <button class="w-full h-12 mt-2 border-2 border-primary text-primary hover:bg-slate-50 rounded-full flex items-center justify-center font-bold transition-colors">
+                        View Details
+                    </button>
+                </article>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ═══ MOBILE / TABLET BOTTOM NAV ═══ -->
+    <nav class="vh-bottom-nav">
+        <button class="vh-bottom-nav-item">
+            <span class="material-symbols-outlined">home</span>
+            <span>Home</span>
+        </button>
+        <button class="vh-bottom-nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+            <span>Tasks</span>
+        </button>
+        <button class="vh-bottom-nav-item">
+            <span class="material-symbols-outlined">chat_bubble</span>
+            <span>Inbox</span>
+        </button>
+        <button class="vh-bottom-nav-item">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+</body>
+</html>

@@ -1,0 +1,452 @@
+/* ============================================================
+   VoiceHire — Flutter-Inspired Responsive Design System
+   Mobile < 640px | Tablet 640–1023px | Desktop >= 1024px
+   ============================================================ */
+
+:root {
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --bottom-nav-height: 72px;
+  --clr-primary: #000000;
+  --clr-secondary: #00668a;
+  --clr-bg: #f7f9fb;
+  --clr-surface: #ffffff;
+  --clr-on-surface: #191c1e;
+  --clr-on-surface-variant: #45464d;
+  --clr-outline: #c6c6cd;
+  --clr-secondary-light: rgba(0,102,138,0.1);
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.25rem;
+  --shadow-sidebar: 4px 0 24px rgba(0,0,0,0.05);
+  --transition: 0.2s ease;
+}
+
+/* ============================================================
+   SIDEBAR — hidden mobile/tablet, shown on desktop
+   ============================================================ */
+
+.vh-sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  height: 100%;
+  width: var(--sidebar-width);
+  background: var(--clr-surface);
+  border-right: 1.5px solid var(--clr-outline);
+  display: none;
+  flex-direction: column;
+  z-index: 40;
+  box-shadow: var(--shadow-sidebar);
+}
+
+@media (min-width: 1024px) {
+  .vh-sidebar { display: flex; }
+}
+
+.vh-sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1.5px solid var(--clr-outline);
+}
+
+.vh-sidebar-logo .logo-icon {
+  font-size: 1.75rem;
+  color: var(--clr-secondary);
+}
+
+.vh-sidebar-logo .logo-text {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--clr-on-surface);
+  font-family: 'Inter', sans-serif;
+}
+
+.vh-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+}
+
+.vh-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  color: var(--clr-on-surface-variant);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  font-family: 'Inter', sans-serif;
+  transition: background var(--transition), color var(--transition);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.vh-nav-item .material-symbols-outlined {
+  font-size: 1.375rem;
+}
+
+.vh-nav-item:hover {
+  background: rgba(0,0,0,0.04);
+  color: var(--clr-on-surface);
+}
+
+.vh-nav-item.active {
+  background: var(--clr-secondary-light);
+  color: var(--clr-secondary);
+  font-weight: 700;
+}
+
+.vh-nav-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
+
+.vh-sidebar-footer {
+  padding: 0.75rem;
+  border-top: 1.5px solid var(--clr-outline);
+}
+
+.vh-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--clr-bg);
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.5rem;
+}
+
+.vh-user-chip .avatar {
+  width: 2.25rem; height: 2.25rem;
+  border-radius: 50%;
+  background: var(--clr-secondary-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--clr-secondary);
+}
+
+.vh-user-chip .user-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--clr-on-surface);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================================
+   MAIN LAYOUT — shifts right on desktop to make room for sidebar
+   ============================================================ */
+
+.vh-main {
+  min-height: 100vh;
+  transition: margin-left var(--transition);
+  padding-bottom: calc(var(--bottom-nav-height) + 1rem);
+}
+
+@media (min-width: 1024px) {
+  .vh-main {
+    margin-left: var(--sidebar-width);
+    padding-bottom: 2rem;
+  }
+}
+
+/* ============================================================
+   ADAPTIVE HEADER — hides logo on desktop (logo is in sidebar)
+   ============================================================ */
+
+.vh-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid rgba(198,198,205,0.5);
+  height: var(--header-height);
+}
+
+@media (min-width: 1024px) {
+  .vh-header-logo { display: none !important; }
+}
+
+/* ============================================================
+   BOTTOM NAV — hidden on desktop
+   ============================================================ */
+
+.vh-bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%;
+  background: var(--clr-surface);
+  border-top: 1.5px solid var(--clr-outline);
+  z-index: 50;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: var(--bottom-nav-height);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+}
+
+@media (min-width: 1024px) {
+  .vh-bottom-nav { display: none; }
+}
+
+.vh-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 1.25rem;
+  color: var(--clr-on-surface-variant);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: color var(--transition);
+}
+
+.vh-bottom-nav-item.active { color: var(--clr-secondary); }
+.vh-bottom-nav-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
+
+.vh-bottom-nav-item .material-symbols-outlined { font-size: 1.5rem; }
+
+/* ============================================================
+   RESPONSIVE GRIDS
+   ============================================================ */
+
+/* Worker / Job cards grid */
+.vh-worker-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .vh-worker-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .vh-worker-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1280px) {
+  .vh-worker-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Jobs feed grid */
+.vh-jobs-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .vh-jobs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================================
+   SPLIT SCREEN (Login / Signup on desktop)
+   ============================================================ */
+
+.vh-split-screen {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.vh-brand-panel {
+  display: none;
+  background: linear-gradient(135deg, #0f172a 0%, #00668a 100%);
+  color: white;
+  padding: 3rem;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .vh-brand-panel {
+    display: flex;
+    flex: 1;
+  }
+}
+
+.vh-brand-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='28'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.vh-brand-panel .brand-title {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.vh-brand-panel .brand-subtitle {
+  font-size: 1.125rem;
+  opacity: 0.75;
+  line-height: 1.6;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.vh-brand-panel .brand-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  opacity: 0.85;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  position: relative;
+}
+
+.vh-brand-panel .brand-feature .material-symbols-outlined {
+  background: rgba(255,255,255,0.15);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.vh-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: var(--clr-bg);
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .vh-form-panel {
+    flex: 0 0 480px;
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* ============================================================
+   DASHBOARD TWO-PANE LAYOUT (Worker profile + jobs)
+   ============================================================ */
+
+.vh-two-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .vh-two-pane {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .vh-pane-left {
+    flex: 0 0 320px;
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+  }
+
+  .vh-pane-right {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ============================================================
+   UTILITY — Responsive padding, max-widths, etc.
+   ============================================================ */
+
+.vh-page-content {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .vh-page-content { padding: 2.5rem 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .vh-page-content { padding: 3rem 2.5rem; }
+}
+
+/* Card hover lift */
+.vh-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.vh-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(0,0,0,0.12);
+}
+
+/* Status badge */
+.vh-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  background: #dcfce7;
+  color: #15803d;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vh-badge-active::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: vh-pulse 1.8s infinite;
+}
+
+@keyframes vh-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+/* Search bar row */
+.vh-search-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .vh-search-row { flex-wrap: nowrap; }
+}
+
+/* Section header */
+.vh-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}

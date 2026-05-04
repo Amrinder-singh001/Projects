@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#40000d",
+                    "tertiary-container": "#40000d",
+                    "surface-tint": "#565e74",
+                    "secondary-fixed-dim": "#7bd0ff",
+                    "surface-container-low": "#f2f4f6",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-variant": "#e0e3e5",
+                    "inverse-primary": "#bec6e0",
+                    "secondary-fixed": "#c4e7ff",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed-variant": "#92002a",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-dim": "#d8dadc",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#ffdadb",
+                    "on-secondary-fixed-variant": "#004c69",
+                    "on-surface": "#191c1e",
+                    "surface-bright": "#f7f9fb",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "tertiary": "#000000",
+                    "tertiary-fixed-dim": "#ffb2b7",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#40c2fd",
+                    "inverse-on-surface": "#eff1f3",
+                    "primary-container": "#131b2e",
+                    "on-background": "#191c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#45464d",
+                    "on-tertiary-container": "#f23d5c",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface": "#f7f9fb",
+                    "on-secondary-fixed": "#001e2c",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "primary": "#000000",
+                    "secondary": "#00668a",
+                    "on-primary-container": "#7c839b",
+                    "on-secondary-container": "#004d6a",
+                    "outline": "#76777d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "24px",
+                    "margin-mobile": "16px",
+                    "stack-lg": "48px",
+                    "gutter": "24px",
+                    "touch-target-min": "56px",
+                    "stack-sm": "12px",
+                    "base": "8px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Inter"],
+                    "action-lg": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-bold": ["16px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "action-lg": ["20px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f7f9fb; font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid rgba(203, 213, 225, 0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar Section -->
+<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b-[1.5px] border-slate-200/50 shadow-[0_8px_32px_0_rgba(15,23,42,0.1)]">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="settings_voice">settings_voice</span>
+<span class="text-2xl font-black tracking-tighter text-slate-900 font-headline-xl">VoiceHire</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100/50 hover:bg-slate-200/50 transition-all border-[1.5px] border-slate-200 active:scale-[0.98] duration-200">
+<span class="material-symbols-outlined text-slate-600" data-icon="language">language</span>
+<span class="font-label-bold text-slate-900">English</span>
+<span class="material-symbols-outlined text-slate-400" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-20 min-h-screen px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="text-center mb-stack-lg max-w-3xl mx-auto">
+<h1 class="font-headline-xl text-headline-xl text-primary-container mb-stack-sm">
+                Find Help or Find Work, Locally.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                Connect with trusted neighbors for everyday tasks. High-contrast, easy navigation, and voice-ready support for everyone.
+            </p>
+</section>
+<!-- Main Interaction Cards (Bento-inspired Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Customer Path -->
+<div class="group relative overflow-hidden glass-panel rounded-[2rem] p-base transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+<div class="h-full w-full rounded-[1.75rem] p-stack-lg flex flex-col justify-between bg-gradient-to-br from-white/40 to-transparent">
+<div class="mb-stack-lg">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-stack-md shadow-lg shadow-secondary-container/20">
+<span class="material-symbols-outlined text-on-secondary-container text-4xl" data-icon="person_search" style="font-variation-settings: 'FILL' 1;">person_search</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-slate-900 mb-base">I am a Customer</h2>
+<p class="font-body-md text-body-md text-slate-600">I need help with cleaning, repairs, or daily errands around my home.</p>
+</div>
+<button class="w-full h-touch-target-min bg-primary-container text-on-primary text-action-lg font-action-lg rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-xl">
+<span>Find Help Now</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Background visual decoration -->
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<img class="w-64 h-64 object-cover" data-alt="A warm, brightly lit modern living room with soft blue accents, representing a safe and comfortable home environment. The scene is depicted in a clean, minimalist photography style with high contrast and soft shadows, evoking a sense of reliability and trust for home services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlP1PB2w-NqFrV9yOe_l0UHi-G72skUSYmOw3wGb9zjRolHzSlM0bN0Cq_yHeHxSH91z1EXr_FseAOBjmZN6k2sYp4HlA-uix8ScGynZyclGxJ6BrEHC7T-C0owTVhNLkxhGZJjxKJm-6aDxUECeIn0n1Y6Pm3xHQZ92hnkEsC69QCLgFb8Mp84Y_S5BE_PAuDqfxxPXhPBs4GmXb58fuB02tHGt7ZMy7XtJkD_E1PJSlHbb_SwEeiWtxktUoU0gp-edknsRIE2RLI"/>
+</div>
+</div>
+<!-- Worker Path -->
+<div class="group relative overflow-hidden glass-panel rounded-[2rem] p-base transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+<div class="h-full w-full rounded-[1.75rem] p-stack-lg flex flex-col justify-between bg-gradient-to-br from-white/40 to-transparent">
+<div class="mb-stack-lg">
+<div class="w-16 h-16 rounded-2xl bg-on-tertiary-container flex items-center justify-center mb-stack-md shadow-lg shadow-on-tertiary-container/20">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="handyman" style="font-variation-settings: 'FILL' 1;">handyman</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-slate-900 mb-base">I am a Worker</h2>
+<p class="font-body-md text-body-md text-slate-600">I want to offer my skills and find jobs in my neighborhood.</p>
+</div>
+<button class="w-full h-touch-target-min bg-secondary text-on-secondary text-action-lg font-action-lg rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-xl">
+<span>Find Work Now</span>
+<span class="material-symbols-outlined" data-icon="work">work</span>
+</button>
+</div>
+<!-- Background visual decoration -->
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<img class="w-64 h-64 object-cover" data-alt="A professional close-up of organized toolkit items and architectural drafting tools resting on a clean, light surface. The lighting is bright and industrial, using a palette of deep slate and vibrant cyan highlights. The atmosphere is professional and authoritative, suggesting high-quality manual labor and expert craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK4LStdO4SGyXL78Ug1PqJv678Y14-9WWEokJwOV0afIwaf83PSP8fB7ZqVXkedUiiRH-nGi6A4R7Zgwl5g4B5EETsWpA6cOewOpVkN2Oqc2IPLlvFfxNtJ-r3De6AdCcDjeJFzz_gWSg1vCO-CpCxTF0-izUkJpo8CkygHKLAKFNmQTaZshWacoTf9IP1y2LRg-S4pwRDARrufCPnSeaRGIPe1yJTeLr97qqcIdCd-OoM8geSklk4xMpxVPLkvRQ5PSGdufwtxeTB"/>
+</div>
+</div>
+</div>
+<!-- How It Works Teaser -->
+<section class="mt-stack-lg bg-surface-container rounded-3xl p-stack-lg border-[1.5px] border-outline-variant/30">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center border-2 border-secondary mb-4">
+<span class="text-secondary font-headline-md">1</span>
+</div>
+<h3 class="font-label-bold text-slate-900">Tell us what you need</h3>
+<p class="text-slate-500 font-body-md text-sm mt-2">Use voice or text to describe the task.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center border-2 border-secondary mb-4">
+<span class="text-secondary font-headline-md">2</span>
+</div>
+<h3 class="font-label-bold text-slate-900">Get Matched</h3>
+<p class="text-slate-500 font-body-md text-sm mt-2">We find the best local professionals for you.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center border-2 border-secondary mb-4">
+<span class="text-secondary font-headline-md">3</span>
+</div>
+<h3 class="font-label-bold text-slate-900">Job Done</h3>
+<p class="text-slate-500 font-body-md text-sm mt-2">Secure payments and verified ratings.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="w-full py-12 bg-slate-50 border-t-2 border-slate-200">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6">
+<div class="flex flex-col gap-2">
+<span class="text-lg font-bold text-slate-900">VoiceHire</span>
+<p class="text-slate-500 font-['Inter'] text-sm tracking-wide">© 2024 VoiceHire. Premium Accessibility.</p>
+</div>
+<nav class="flex flex-wrap justify-center gap-6">
+<a class="text-slate-500 hover:text-slate-900 font-['Inter'] text-sm tracking-wide transition-opacity duration-300" href="#">Privacy</a>
+<a class="text-slate-500 hover:text-slate-900 font-['Inter'] text-sm tracking-wide transition-opacity duration-300" href="#">Terms</a>
+<a class="text-slate-500 hover:text-slate-900 font-['Inter'] text-sm tracking-wide transition-opacity duration-300" href="#">Support</a>
+<a class="text-slate-500 hover:text-slate-900 font-['Inter'] text-sm tracking-wide transition-opacity duration-300" href="#">Contact</a>
+</nav>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center hover:bg-secondary-container transition-all cursor-pointer">
+<span class="material-symbols-outlined text-slate-600" data-icon="accessibility_new">accessibility_new</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

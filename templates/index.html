@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceHire - AI Local Worker Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Initial Language Overlay -->
+        <div id="language-overlay" class="overlay active">
+            <div class="overlay-content">
+                <div class="logo large-logo">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                    <span>VoiceHire</span>
+                </div>
+                <h2>Select Your Language<br><small>अपनी भाषा चुनें</small></h2>
+                <div class="lang-options">
+                    <button class="primary-btn large-btn" onclick="app.selectInitialLanguage('en')">English</button>
+                    <button class="primary-btn large-btn" onclick="app.selectInitialLanguage('hi')">हिन्दी (Hindi)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <span>VoiceHire</span>
+            </div>
+            <div class="header-right">
+                <div class="language-selector">
+                    <button id="lang-en" class="lang-btn active">EN</button>
+                    <button id="lang-hi" class="lang-btn">HI</button>
+                </div>
+                <button id="btn-logout" class="logout-btn" style="display: none;" onclick="app.logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            
+            <!-- Landing Section (Role Selection) -->
+            <section id="landing-section" class="view-section active">
+                <div class="hero-content">
+                    <h1 id="hero-title">Hire Local Experts with Your Voice</h1>
+                    <p id="hero-subtitle">Fast, easy, and AI-powered platform for local services.</p>
+                </div>
+                <div class="role-buttons">
+                    <button class="primary-btn large-btn" onclick="app.setRoleAndProceed('worker')">
+                        <i class="fa-solid fa-helmet-safety"></i>
+                        <span id="btn-i-am-worker">I am Worker</span>
+                    </button>
+                    <button class="secondary-btn large-btn" onclick="app.setRoleAndProceed('user')">
+                        <i class="fa-solid fa-user"></i>
+                        <span id="btn-i-am-user">I am User</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Auth Choice Section -->
+            <section id="auth-choice-section" class="view-section">
+                <div class="section-header">
+                    <button class="back-btn" onclick="app.showSection('landing-section')">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 id="auth-choice-title">Welcome</h2>
+                </div>
+                <div class="role-buttons">
+                    <button class="primary-btn large-btn" onclick="app.goToLogin()">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span id="btn-login-choice">Log In</span>
+                    </button>
+                    <button class="secondary-btn large-btn" onclick="app.goToSignup()">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span id="btn-signup-choice">Create Account</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Login Section -->
+            <section id="login-section" class="view-section">
+                <div class="section-header">
+                    <button class="back-btn" onclick="app.showSection('auth-choice-section')">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 id="login-title">Log In</h2>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="l-phone" id="label-l-phone">Phone Number</label>
+                        <input type="tel" id="l-phone" required placeholder="10-digit number">
+                    </div>
+                    <div class="form-group">
+                        <label for="l-password" id="label-l-password">Password</label>
+                        <input type="password" id="l-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn large-btn">
+                        <span id="btn-submit-login">Log In</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- User Signup Section -->
+            <section id="user-signup-section" class="view-section">
+                <div class="section-header">
+                    <button class="back-btn" onclick="app.showSection('auth-choice-section')">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 id="user-signup-title">User Registration</h2>
+                </div>
+                <form id="user-signup-form">
+                    <div class="form-group">
+                        <label for="us-name" id="label-us-name">Full Name</label>
+                        <input type="text" id="us-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="us-phone" id="label-us-phone">Phone Number</label>
+                        <input type="tel" id="us-phone" required placeholder="10-digit number">
+                    </div>
+                    <div class="form-group">
+                        <label for="us-password" id="label-us-password">Password</label>
+                        <input type="password" id="us-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn large-btn">
+                        <span id="btn-submit-user-signup">Create Account</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Worker Signup Section -->
+            <section id="worker-signup-section" class="view-section">
+                <div class="section-header">
+                    <button class="back-btn" onclick="app.showSection('auth-choice-section')">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 id="worker-title">Worker Registration</h2>
+                </div>
+                
+                <!-- AI Conversational UI -->
+                <div class="voice-assist-card" id="ai-builder-card">
+                    <h3 id="ai-builder-title" style="margin-bottom: 1rem; color: var(--primary-color);">AI Assistant Guide</h3>
+                    <button id="btn-start-ai" class="voice-btn" onclick="app.startStepByStepAI()">
+                        <i class="fa-solid fa-robot"></i>
+                        <span id="speak-text">Start Voice Setup</span>
+                    </button>
+                    
+                    <div id="ai-conversation-area" style="display:none; margin-top: 1.5rem;">
+                        <p id="ai-question" class="ai-speech-bubble">Hi! I will guide you.</p>
+                        <div class="listening-indicator" id="ai-listening-anim">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                        <p id="ai-transcript" class="transcript-box" style="display:none;"></p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <span style="color: var(--text-muted);">— OR Fill Manually —</span>
+                </div>
+
+                <form id="worker-signup-form">
+                    <div class="form-group">
+                        <label for="w-name" id="label-name">Full Name</label>
+                        <input type="text" id="w-name" name="name" required placeholder="e.g. Rahul Kumar">
+                    </div>
+                    <div class="form-group">
+                        <label for="w-work" id="label-work">Work Type</label>
+                        <select id="w-work" name="work" required>
+                            <option value="">Select Service</option>
+                            <option value="Maid">Maid</option>
+                            <option value="Plumber">Plumber</option>
+                            <option value="Electrician">Electrician</option>
+                            <option value="Carpenter">Carpenter</option>
+                            <option value="Painter">Painter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="w-location" id="label-location">Location</label>
+                        <input type="text" id="w-location" name="location" required placeholder="e.g. Mumbai">
+                    </div>
+                    <div class="form-group">
+                        <label for="w-phone" id="label-phone">Phone Number</label>
+                        <input type="tel" id="w-phone" name="phone" required placeholder="10-digit number">
+                    </div>
+                    <div class="form-group" id="pass-group">
+                        <label for="w-password" id="label-password">Password</label>
+                        <input type="password" id="w-password" name="password" required>
+                    </div>
+                    
+                    <div class="media-upload-section" id="w-media-section">
+                        <h3 id="media-title">Upload Portfolio (Optional)</h3>
+                        <div class="form-group">
+                            <label for="w-voice" id="label-voice">Voice Note</label>
+                            <input type="file" id="w-voice" name="voice_note" accept="audio/*">
+                        </div>
+                        <div class="form-group">
+                            <label for="w-video" id="label-video">Video Pitch</label>
+                            <input type="file" id="w-video" name="video" accept="video/*">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn large-btn" id="btn-submit-worker">
+                        <span>Register Profile</span>
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </form>
+            </section>
+
+            <!-- User Dashboard Section -->
+            <section id="user-dashboard-section" class="view-section">
+                <div class="dashboard-header">
+                    <h2 id="user-dash-title">User Dashboard</h2>
+                    <p id="user-welcome">Welcome!</p>
+                </div>
+                
+                <!-- Post a Job Request -->
+                <div class="media-upload-section" style="background: #E0E7FF; border-color: #A5B4FC;">
+                    <h3><i class="fa-solid fa-bullhorn"></i> Post a Job Request</h3>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem; color: #4338CA;">Need help right now? Post a query and available workers will contact you.</p>
+                    <form id="job-post-form">
+                        <div class="form-group">
+                            <select id="j-service" required>
+                                <option value="">What do you need?</option>
+                                <option value="Maid">Maid</option>
+                                <option value="Plumber">Plumber</option>
+                                <option value="Electrician">Electrician</option>
+                                <option value="Carpenter">Carpenter</option>
+                                <option value="Painter">Painter</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="j-desc" required placeholder="Describe what needs to be done..." style="padding: 1rem;">
+                        </div>
+                        <button type="submit" class="submit-btn large-btn" style="margin-top: 0;">Post Job Request</button>
+                    </form>
+                </div>
+
+                <div class="filter-card" style="margin-top: 2rem;">
+                    <label for="u-service" id="label-find-service">Browse Workers Manually</label>
+                    <select id="u-service" onchange="app.fetchWorkers()">
+                        <option value="all">All Services</option>
+                        <option value="Maid">Maid</option>
+                        <option value="Plumber">Plumber</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Carpenter">Carpenter</option>
+                        <option value="Painter">Painter</option>
+                    </select>
+                </div>
+
+                <div id="workers-list" class="workers-grid">
+                    <div class="loading-state">Loading workers...</div>
+                </div>
+            </section>
+
+            <!-- Worker Dashboard Section -->
+            <section id="worker-dashboard-section" class="view-section">
+                <div class="dashboard-header">
+                    <h2 id="worker-dash-title">Worker Dashboard</h2>
+                    <p id="worker-welcome">Welcome!</p>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-bell"></i> Available Job Queries</h3>
+                <div id="jobs-list" class="workers-grid" style="margin-bottom: 2rem;">
+                    <!-- Jobs Injected Here -->
+                </div>
+
+                <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-id-badge"></i> My Profile</h3>
+                <div id="my-profile-card" class="worker-card expanded">
+                    <!-- Injected via JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

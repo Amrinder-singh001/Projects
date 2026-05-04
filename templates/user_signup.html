@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Customer Registration - VoiceHire</title>
+    <meta name="description" content="Create a VoiceHire customer account to find reliable local workers.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode:"class",
+            theme:{
+                extend:{
+                    colors:{
+                        "primary":"#000000","secondary":"#00668a","background":"#f7f9fb",
+                        "surface":"#ffffff","on-surface":"#191c1e",
+                        "on-surface-variant":"#45464d","outline-variant":"#c6c6cd","outline":"#76777d"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid #e0e3e5;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+        }
+        .custom-input {
+            border: none;
+            border-bottom: 2px solid #76777d;
+            background: transparent;
+            transition: border-color 0.2s;
+            width: 100%; height: 3rem;
+            font-size: 1.0625rem;
+            outline: none; padding: 0;
+        }
+        .custom-input:focus { border-bottom-color: #000; }
+        body { min-height: 100dvh; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+
+    <div class="vh-split-screen">
+        <!-- ═══ LEFT — Brand Panel (desktop only) ═══ -->
+        <div class="vh-brand-panel">
+            <div style="position:absolute;width:350px;height:350px;border-radius:50%;background:rgba(255,255,255,0.05);top:-80px;left:-80px;"></div>
+            <div style="position:absolute;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,0.05);bottom:-60px;right:-60px;"></div>
+
+            <div style="position:relative">
+                <div class="flex items-center gap-3 mb-8">
+                    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:10px">
+                        <span class="material-symbols-outlined" style="font-size:2rem;color:white;font-variation-settings:'FILL' 1">person_search</span>
+                    </div>
+                    <span style="font-size:1.75rem;font-weight:900;letter-spacing:-0.02em;font-family:Inter,sans-serif">VoiceHire</span>
+                </div>
+
+                <h2 class="brand-title">{{ t('Find Trusted Help Near You.') }}</h2>
+                <p class="brand-subtitle">{{ t('Connect with verified local workers for cleaning, repairs, and everyday tasks.') }}</p>
+
+                <div class="brand-feature">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">location_on</span>
+                    <span>{{ t('Hyper-local workers in your neighbourhood') }}</span>
+                </div>
+                <div class="brand-feature">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">verified_user</span>
+                    <span>{{ t('Verified profiles with voice & video portfolios') }}</span>
+                </div>
+                <div class="brand-feature">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">translate</span>
+                    <span>{{ t('Available in 13 Indian languages') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ RIGHT — Form Panel ═══ -->
+        <div class="vh-form-panel">
+            <div class="w-full" style="max-width:420px">
+
+                <!-- Mobile logo -->
+                <div class="flex flex-col items-center mb-8 lg:hidden">
+                    <div class="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-3 shadow">
+                        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL' 1">person_search</span>
+                    </div>
+                    <h1 class="text-3xl font-black tracking-tight text-primary">VoiceHire</h1>
+                </div>
+
+                <!-- Back link -->
+                <a href="{{ url_for('login_page', role='user') }}"
+                    class="inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-secondary mb-5 transition-colors">
+                    <span class="material-symbols-outlined text-base">arrow_back</span>{{ t('Back to Login') }}
+                </a>
+
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-primary">{{ t('Create Customer Account') }}</h2>
+                    <p class="text-on-surface-variant mt-1 text-sm">{{ t('Join VoiceHire to find reliable help in your community.') }}</p>
+                </div>
+
+                <form id="user-signup-form" class="glass-panel rounded-2xl p-6 flex flex-col gap-6">
+                    <!-- Full Name -->
+                    <div class="relative pt-5">
+                        <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="us-name">{{ t('Full Name') }}</label>
+                        <div class="flex items-center gap-2">
+                            <input class="custom-input flex-1" id="us-name" name="name" placeholder="{{ t('e.g. Priya Sharma') }}" required type="text"/>
+                            <button type="button" aria-label="Voice input"
+                                class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-secondary transition-colors flex-shrink-0">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="relative pt-5">
+                        <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="us-phone">{{ t('Phone Number') }}</label>
+                        <div class="flex items-center gap-2">
+                            <input class="custom-input flex-1" id="us-phone" name="phone" placeholder="{{ t('10-digit number') }}" required type="tel"/>
+                            <button type="button" aria-label="Voice input"
+                                class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-secondary transition-colors flex-shrink-0">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="relative pt-5">
+                        <label class="absolute top-0 left-0 text-xs font-bold text-on-surface-variant uppercase tracking-wide" for="us-password">{{ t('Password') }}</label>
+                        <div class="flex items-center gap-2">
+                            <input class="custom-input flex-1" id="us-password" name="password" placeholder="••••••••" required type="password"/>
+                            <button type="button" aria-label="Voice input"
+                                class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-secondary transition-colors flex-shrink-0">
+                                <span class="material-symbols-outlined">mic</span>
+                            </button>
+                            <button type="button" id="btn-toggle-pw" aria-label="Toggle password"
+                                class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-secondary transition-colors flex-shrink-0">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit"
+                        class="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg text-base mt-2">
+                        {{ t('Create Customer Account') }}
+                        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">arrow_forward</span>
+                    </button>
+
+                    <p class="text-center text-xs text-on-surface-variant">
+                        {{ t('Already have an account?') }} <a href="{{ url_for('login_page', role='user') }}" class="font-bold text-secondary hover:text-primary transition-colors">{{ t('Log in') }}</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        const togglePw = document.getElementById('btn-toggle-pw');
+        const pwField = document.getElementById('us-password');
+        if (togglePw && pwField) {
+            togglePw.addEventListener('click', () => {
+                const isText = pwField.type === 'text';
+                pwField.type = isText ? 'password' : 'text';
+                togglePw.querySelector('.material-symbols-outlined').textContent = isText ? 'visibility' : 'visibility_off';
+            });
+        }
+    </script>
+</body>
+</html>

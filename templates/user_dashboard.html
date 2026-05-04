@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Customer Dashboard - VoiceHire</title>
+    <meta name="description" content="Find local workers and post job requests on VoiceHire.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#000000",
+                        "secondary": "#00668a",
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd"
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid #e0e3e5;
+        }
+        .worker-card { transition: all 0.2s ease; }
+        .worker-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.12);
+        }
+        #workers-list audio { width: 100%; border-radius: 8px; margin-top: 0.5rem; }
+        /* Job post section two-col on tablet+ */
+        @media (min-width: 768px) {
+            .job-post-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .job-post-grid .submit-btn { grid-column: 1 / -1; }
+        }
+        #map-view { 
+            height: 500px; 
+            width: 100%; 
+            border-radius: 16px; 
+            z-index: 10; 
+            border: 2px solid #e0e3e5;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+
+    <!-- ═══ DESKTOP SIDEBAR ═══ -->
+    <aside class="vh-sidebar">
+        <div class="vh-sidebar-logo">
+            <span class="material-symbols-outlined logo-icon">settings_voice</span>
+            <span class="logo-text">VoiceHire</span>
+        </div>
+        <nav class="vh-sidebar-nav">
+            <button class="vh-nav-item active" onclick="window.location.href='/dashboard/user'">
+                <span class="material-symbols-outlined">home</span>
+                <span>{{ t('Home') }}</span>
+            </button>
+            <button class="vh-nav-item" onclick="document.getElementById('find-workers-section').scrollIntoView({behavior:'smooth'})">
+                <span class="material-symbols-outlined">person_search</span>
+                <span>{{ t('Find Workers') }}</span>
+            </button>
+            <button class="vh-nav-item" onclick="document.getElementById('post-job-section').scrollIntoView({behavior:'smooth'})">
+                <span class="material-symbols-outlined">add_task</span>
+                <span>{{ t('Post a Job') }}</span>
+            </button>
+        </nav>
+        <div class="vh-sidebar-footer">
+            <div class="vh-user-chip">
+                <div class="avatar"><span class="material-symbols-outlined text-sm">person</span></div>
+                <span class="user-name">{{ t('My Account') }}</span>
+            </div>
+            <button class="vh-nav-item" onclick="window.location.href='/logout'">
+                <span class="material-symbols-outlined">logout</span>
+                <span>{{ t('Sign Out') }}</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN WRAPPER ═══ -->
+    <div class="vh-main">
+
+        <!-- Sticky Header -->
+        <header class="vh-header flex items-center justify-between px-4 sm:px-6">
+            <div class="flex items-center gap-2 vh-header-logo">
+                <span class="material-symbols-outlined text-secondary">settings_voice</span>
+                <span class="font-black text-lg tracking-tight">VoiceHire</span>
+            </div>
+            <!-- Desktop page title -->
+            <h1 class="hidden lg:block font-bold text-lg text-on-surface">{{ t('Customer Dashboard') }}</h1>
+            <div class="flex items-center gap-3">
+                <div id="google_translate_element" style="display:none"></div>
+                <button class="p-2 rounded-full hover:bg-slate-100 transition-colors lg:hidden" onclick="window.location.href='/logout'">
+                    <span class="material-symbols-outlined text-on-surface-variant">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ PAGE CONTENT ═══ -->
+        <main class="vh-page-content flex flex-col gap-8">
+
+            <!-- Welcome Banner -->
+            <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-primary">{{ t('Welcome back! 👋') }}</h2>
+                    <p class="text-on-surface-variant text-base sm:text-lg mt-1">{{ t('What can we help you find today?') }}</p>
+                </div>
+                <span class="vh-badge-active self-start sm:self-auto">{{ t('Connected') }}</span>
+            </section>
+
+            <!-- Quick Stats Row (tablet/desktop) -->
+            <div class="hidden sm:grid sm:grid-cols-3 gap-4">
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-blue-600 text-xl">person_search</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">{{ t('Workers Near You') }}</p>
+                        <p class="font-bold text-xl" id="stat-workers-count">—</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-green-600 text-xl">task_alt</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">{{ t('Jobs Posted') }}</p>
+                        <p class="font-bold text-xl" id="stat-jobs-count">0</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-purple-600 text-xl">mic</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">{{ t('Voice Ready') }}</p>
+                        <p class="font-bold text-lg text-green-600">{{ t('Active') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post a Job -->
+            <section id="post-job-section" class="glass-panel rounded-2xl p-5 sm:p-6 border-2 border-secondary/10">
+                <h3 class="font-bold text-xl mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">mic</span>
+                    {{ t('Post a Job Request') }}
+                </h3>
+                <form id="job-post-form" class="flex flex-col gap-4">
+                    <div class="job-post-grid">
+                        <input type="text" id="j-service" required
+                            placeholder="{{ t('Work Type') }}"
+                            class="w-full h-12 rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary transition-all px-4"/>
+                        <input type="text" id="j-loc" required
+                            placeholder="{{ t('Location') }}"
+                            class="w-full h-12 rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary transition-all px-4"/>
+                        <textarea id="j-desc" required
+                            placeholder="{{ t('Describe what needs to be done...') }}"
+                            class="w-full p-4 rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary transition-all h-24 resize-none"></textarea>
+                        
+                        <div class="flex items-center gap-2 px-2">
+                            <input type="checkbox" id="j-urgent" class="rounded border-slate-300 text-secondary focus:ring-secondary">
+                            <label for="j-urgent" class="text-sm font-bold text-red-600 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">priority_high</span>
+                                {{ t('Urgent - Need Today') }}
+                            </label>
+                        </div>
+
+                        <button type="submit" class="submit-btn w-full h-14 bg-primary text-white rounded-xl font-bold hover:opacity-90 active:scale-[0.98] transition-all">
+                            {{ t('Post Job Request') }}
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- My Jobs Section -->
+            <section id="my-jobs-section" class="flex flex-col gap-5">
+                <div class="vh-section-header">
+                    <h3 class="text-2xl font-bold">{{ t('My Posted Jobs') }}</h3>
+                    <button onclick="app.fetchCustomerJobs()" class="p-2 h-10 w-10 flex items-center justify-center text-secondary hover:bg-secondary/5 rounded-lg transition-all border border-secondary/20" title="Refresh">
+                        <span class="material-symbols-outlined text-lg">refresh</span>
+                    </button>
+                </div>
+                <div id="my-jobs-list" class="grid sm:grid-cols-2 gap-4">
+                    <div class="col-span-full text-slate-400 italic py-6 text-center">
+                        <span class="material-symbols-outlined text-4xl block mb-2 text-slate-300">task</span>
+                        {{ t('Loading your jobs...') }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Find Workers Section -->
+            <section id="find-workers-section" class="flex flex-col gap-5">
+                <div class="vh-section-header flex-col items-start gap-4">
+                    <h3 class="text-2xl font-bold">{{ t('Find Local Workers') }}</h3>
+                    
+                    <!-- Service Category Tiles -->
+                    <div class="flex flex-wrap gap-2 w-full pb-2 overflow-x-auto no-scrollbar">
+                        <button onclick="app.setServiceFilter('All')" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>🏠</span> {{ t('All') }}
+                        </button>
+                        <button onclick="app.setServiceFilter('Plumber')" class="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>🔧</span> {{ t('Plumber') }}
+                        </button>
+                        <button onclick="app.setServiceFilter('Electrician')" class="flex items-center gap-2 px-4 py-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>⚡</span> {{ t('Electrician') }}
+                        </button>
+                        <button onclick="app.setServiceFilter('Maid')" class="flex items-center gap-2 px-4 py-2 bg-pink-50 hover:bg-pink-100 text-pink-700 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>🧹</span> {{ t('Maid') }}
+                        </button>
+                        <button onclick="app.setServiceFilter('Painter')" class="flex items-center gap-2 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>🎨</span> {{ t('Painter') }}
+                        </button>
+                        <button onclick="app.setServiceFilter('Carpenter')" class="flex items-center gap-2 px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                            <span>🪚</span> {{ t('Carpenter') }}
+                        </button>
+                    </div>
+
+                    <div class="vh-search-row w-full flex-wrap">
+                        <div class="relative flex-1 min-w-[180px]">
+                            <input type="text" id="u-service" placeholder="{{ t('Search by service...') }}"
+                                class="w-full h-12 rounded-xl border-outline-variant text-sm focus:ring-secondary focus:border-secondary px-3 pl-10"/>
+                            <span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400">search</span>
+                        </div>
+                        <div class="relative flex-1 min-w-[180px]">
+                            <input type="text" id="u-location" placeholder="{{ t('Location...') }}"
+                                class="w-full h-12 rounded-xl border-outline-variant text-sm focus:ring-secondary focus:border-secondary px-3 pr-10"/>
+                            <button onclick="app.detectLocation('u-location')" class="absolute right-3 top-3.5 text-secondary hover:text-secondary/80">
+                                <span class="material-symbols-outlined text-[20px]">my_location</span>
+                            </button>
+                        </div>
+                        <button onclick="app.fetchWorkers()"
+                            class="px-8 h-12 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all">
+                            {{ t('Search') }}
+                        </button>
+                    <div class="flex items-center gap-2 mt-4">
+                        <button id="btn-list-view" onclick="app.toggleView('list')" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-lg">list</span> {{ t('List View') }}
+                        </button>
+                        <button id="btn-map-view" onclick="app.toggleView('map')" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition-all">
+                            <span class="material-symbols-outlined text-lg">map</span> {{ t('Map View') }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- List View -->
+                <div id="workers-list" class="vh-worker-grid">
+                    <div class="col-span-full text-slate-400 italic py-6 text-center">
+                        <span class="material-symbols-outlined text-4xl block mb-2 text-slate-300">person_search</span>
+                        {{ t('Loading workers...') }}
+                    </div>
+                </div>
+
+                <!-- Map View -->
+                <div id="map-container" style="display:none;" class="w-full">
+                    <div id="map-view"></div>
+                </div>
+            </section>
+        </main>
+    </div><!-- end .vh-main -->
+
+    <!-- ═══ MOBILE / TABLET BOTTOM NAV ═══ -->
+    <nav class="vh-bottom-nav">
+        <button class="vh-bottom-nav-item active">
+            <span class="material-symbols-outlined">home</span>
+            <span>{{ t('Home') }}</span>
+        </button>
+        <button class="vh-bottom-nav-item" onclick="document.getElementById('find-workers-section').scrollIntoView({behavior:'smooth'})">
+            <span class="material-symbols-outlined">person_search</span>
+            <span>{{ t('Find Workers') }}</span>
+        </button>
+        <button class="vh-bottom-nav-item" onclick="document.getElementById('post-job-section').scrollIntoView({behavior:'smooth'})">
+            <span class="material-symbols-outlined">add_task</span>
+            <span>{{ t('Post a Job') }}</span>
+        </button>
+        <button class="vh-bottom-nav-item" onclick="window.location.href='/logout'">
+            <span class="material-symbols-outlined">logout</span>
+            <span>{{ t('Sign Out') }}</span>
+        </button>
+    </nav>
+
+    <!-- ═══ REVIEW MODAL ═══ -->
+    <div id="review-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-primary">{{ t('Rate your Experience') }}</h3>
+                <button onclick="app.closeReviewModal()" class="text-slate-400 hover:text-primary">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="flex justify-center gap-2 mb-8" id="star-rating-container">
+                <button onclick="app.setRating(1)" class="star-btn text-4xl text-slate-300 hover:text-yellow-400 transition-colors" data-value="1">★</button>
+                <button onclick="app.setRating(2)" class="star-btn text-4xl text-slate-300 hover:text-yellow-400 transition-colors" data-value="2">★</button>
+                <button onclick="app.setRating(3)" class="star-btn text-4xl text-slate-300 hover:text-yellow-400 transition-colors" data-value="3">★</button>
+                <button onclick="app.setRating(4)" class="star-btn text-4xl text-slate-300 hover:text-yellow-400 transition-colors" data-value="4">★</button>
+                <button onclick="app.setRating(5)" class="star-btn text-4xl text-slate-300 hover:text-yellow-400 transition-colors" data-value="5">★</button>
+            </div>
+
+            <input type="hidden" id="rev-rating" value="0">
+            <input type="hidden" id="rev-job-id">
+            <input type="hidden" id="rev-worker-id">
+
+            <textarea id="rev-text" placeholder="{{ t('Tell others how it went...') }}" 
+                class="w-full h-32 rounded-xl border-slate-200 focus:ring-secondary focus:border-secondary p-4 text-sm mb-6 resize-none"></textarea>
+
+            <button onclick="app.submitReviewFromModal()" class="w-full h-14 bg-primary text-white rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all">
+                {{ t('Submit Review') }}
+            </button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            app.fetchWorkers();
+            app.fetchCustomerJobs();
+            // Update stats count after workers load
+            setTimeout(() => {
+                const cards = document.querySelectorAll('#workers-list .worker-card, #workers-list > div:not(.col-span-full)');
+                if (cards.length) document.getElementById('stat-workers-count').textContent = cards.length + '+';
+            }, 2000);
+        });
+        // Count job posts
+        let jobCount = 0;
+        const origForm = document.getElementById('job-post-form');
+        if (origForm) {
+            origForm.addEventListener('submit', () => {
+                jobCount++;
+                const el = document.getElementById('stat-jobs-count');
+                if (el) el.textContent = jobCount;
+            });
+        }
+    </script>
+</body>
+</html>

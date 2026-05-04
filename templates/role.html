@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-content">
+    <h1 id="hero-title">{{ t('Hire Local Experts with Your Voice') }}</h1>
+    <p id="hero-subtitle">{{ t('Fast, easy, and AI-powered platform for local services.') }}</p>
+</div>
+<div class="role-buttons">
+    <a href="{{ url_for('login_page', role='worker') }}" style="text-decoration: none;">
+        <button class="primary-btn large-btn" onclick="app.setRole('worker')">
+            <i class="fa-solid fa-helmet-safety"></i>
+            <span id="btn-i-am-worker">{{ t('I am Worker') }}</span>
+        </button>
+    </a>
+    <a href="{{ url_for('login_page', role='user') }}" style="text-decoration: none;">
+        <button class="secondary-btn large-btn" onclick="app.setRole('user')">
+            <i class="fa-solid fa-user"></i>
+            <span id="btn-i-am-user">{{ t('I am User') }}</span>
+        </button>
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceHire - AI Local Worker Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_head %}{% endblock %}
+    <style>
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">VoiceHire</a>
+            </div>
+            <div class="header-right">
+                
+                {% if session.get('user_id') %}
+                <button id="btn-logout" class="logout-btn" onclick="app.logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content" style="padding: 2rem 1.5rem; position: relative;">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Hidden AI Prompts for DOM Translation -->
+    <div id="ai-prompts" style="display: none;">
+        <span id="ai-p0">What is your full name?</span>
+        <span id="ai-p1">What type of work do you do?</span>
+        <span id="ai-p2">In which city or area do you live?</span>
+        <span id="ai-p3">Please tell me your ten digit phone number.</span>
+        <span id="ai-p4">Great! Your details are saved. Your password is your phone number. You can upload a voice note or video below, then click Register Profile.</span>
+        <span id="ai-retry">Sorry, I didn't catch that. Please repeat.</span>
+    </div>
+
+    <script>
+        window.flaskSessionRole = "{{ session.get('role') }}";
+    </script>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
